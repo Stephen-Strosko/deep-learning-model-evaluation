@@ -60,7 +60,7 @@ def individual_label_accuracies(results, labels, threshold):
                     temp_list.append(0)
         list_to_df.append(temp_list)
     df = pd.DataFrame(list_to_df)
-    final_scores = [round(label_score/len(df), 3) for label_score in df.sum()]
+    final_scores = [(round(label_score/len(df), 3)*100) for label_score in df.sum()]
     return final_scores
 
 
@@ -78,5 +78,5 @@ def individual_label_accuracies_tp(results, labels, threshold):
                 temp_list.append(0)
         list_to_df.append(temp_list)
     df = pd.DataFrame(list_to_df)
-    final_scores = [round(label_score/len(df), 3) for label_score in df.sum()]
+    final_scores = [(round(label_score/len(df), 3)*100) for label_score in df.sum()]
     return final_scores
