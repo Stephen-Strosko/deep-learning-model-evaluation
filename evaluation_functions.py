@@ -1,4 +1,5 @@
 def exact_match(results, labels, threshold):
+    # accuracy, exact
     correct = []
     total = []
     for result, label in zip(results, labels):
@@ -16,67 +17,75 @@ def exact_match(results, labels, threshold):
     return (len(correct)/len(total))*100
 
 
-def true_positives(results, labels, threshold):
-    tp_correct = []
-    tp_total = []
-    for result, label in zip(results, labels):
+def individual_label_accuracy(results, labels, threshold):
+    # accuracy
+    results_transformed = np.array(results).T
+    labels_transformed = np.array(labels).T
+    final = []
+    for result, label in zip(results_transformed, labels_transformed):
+        tps_tns = []
         for r, l in zip(result, label):
-            if l == 1:
+            if l:
                 if r >= threshold:
-                    tp_correct.append(1)
-                tp_total.append(1)
-    return (len(tp_correct)/len(tp_total))*100
-
-
-def per_label(results, labels, threshold):
-    pl_correct = []
-    pl_total = []
-    for result, label in zip(results, labels):
-        for r, l in zip(result, label):
-            if l == 1:
-                if r >= threshold:
-                    pl_correct.append(1)
-            if l == 0:
-                if r < threshold:
-                    pl_correct.append(1)
-            pl_total.append(1)     
-    return (len(pl_correct)/len(pl_total))*100
-
-
-def individual_label_accuracies(results, labels, threshold):
-    list_to_df = []
-    for result, label in zip(results, labels):
-        temp_list = []
-        for r, l in zip(result, label):
-            if l == 1:
-                if r >= threshold:
-                    temp_list.append(1)
-                else:
-                    temp_list.append(0)
-            if l == 0:
-                if r <= threshold:
-                    temp_list.append(1)
-                else:
-                    temp_list.append(0)
-        list_to_df.append(temp_list)
-    df = pd.DataFrame(list_to_df)
-    final_scores = [(round(label_score/len(df), 3)*100) for label_score in df.sum()]
-    return final_scores
-
-
-def individual_label_accuracies_tp(results, labels, threshold):
-    list_to_df = []
-    for result, label in zip(results, labels):
-        temp_list = []
-        for r, l in zip(result, label):
-            if l == 1:
-                if r >= threshold:
-                    temp_list.append(1)
-                else:
-                    temp_list.append(0)
+                    tps_tns.append(1)
             else:
-                temp_list.append(0)
-        list_to_df.append(temp_list)
-    df = pd.DataFrame(list_to_df)
-    final_scores = [(round(label_score/len(df), 3)*100) for label_score in df.sum()]
-    return final_scores
+                if r < threshold:
+                    tps_tns.append(1)
+        try:
+            final.append(f'{round(sum(tps_tns)/len(result)*100, 2)}%')
+        except ZeroDivisionError:
+            final.append('No labels in test sample')
+    return final
+
+
+def individual_label_precision(results, labels, threshold):
+    results_transformed = np.array(results).T
+    labels_transformed = np.array(labels).T
+    final = []
+    for result, label in zip(results_transformed, labels_transformed):
+        tps = []
+        tps_fps = []
+        for r, l in zip(result, label):
+            if l:
+                if r >= threshold:
+                    tps.append(1)
+            if r >= threshold:
+                tps_fps.append(1)
+        try:
+            final.append(f'{round(sum(tps)/sum(tps_fps)*100, 2)}%')
+        except ZeroDivisionError:
+            final.append('No labels in test sample')
+    return final
+
+
+def individual_label_recall(results, labels, threshold):
+    results_transformed = np.array(results).T
+    labels_transformed = np.array(labels).T
+    final = []
+    for result, label in zip(results_transformed, labels_transformed):
+        tps_fns = []
+        tps = []
+        for r, l in zip(result, label):
+            if l:
+                tps_fns.append(1)
+                if r >= threshold:
+                    tps.append(1)
+        try:
+            final.append(f'{round(sum(tps)/sum(tps_fns)*100, 2)}%')
+        except ZeroDivisionError:
+            final.append('No positive labels in test sample')
+    return final
+
+
+def per_label_f1_scores(results, labels, threshold):
+    f1_scores = []
+    precision = individual_label_precision(results, labels, threshold)
+    recall = individual_label_recall(results, labels, threshold)
+    for p, r in zip(precision, recall):
+        try:
+            p = float(p.strip('%'))/100
+            r = float(r.strip('%'))/100
+            f1_scores.append(2*((p*r)/(p+r)))
+        except ValueError:
+            f1_scores.append('f1 score not possible')
+    return f1_scores

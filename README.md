@@ -4,50 +4,71 @@ This repository provides a series of functions that help with a very specific ob
 
 These are the functions currently included in the repository, their inputs, their outputs, and what they accomplish:
 
-1) exact_match
-
-This function provides the percent of results that are an exact match across all labels at a certain threshold. For example, an algorithm that outputs five labels with outcomes of 0.55, 0.11, 0.78, 0.99, 0.02, would return a result of 0% accuracy if the threshold was set at 75% and the correct labels were True, False, True, True, False. Only the first item would be marked as incorrect, but since it is not an exact match if this was the only output, the accuracy would be 0%. If the threshold was changed to 50% then the accuracy would be 100%. 
-
-The inputs to this function are:
-A list of lists or an array that contains the probability outputs (this is the typical output of `.predict` call in most machine learning libraries).
-A list of lists or an array that contains the labels for the associated results (this is typically stored in the y_test of your split).
-A threshold for the probability that is associated with a correct result.
-
-2) true_positives
-
-This function provides the accuracy for true positives in the results at a certain threshold. For example, an algorithm that outputs five labels with outcomes of 0.55, 0.11, 0.78, 0.99, 0.02, would return a result of 66% accuracy if the threshold was set at 75% and the correct labels were True, False, True, True, False. There are three possibilities of a true positive and only two were predicted correctly at the 75% threshold.
+1) exact_accuracy
+This function provides the accuracy of the model as a whole, treating TP and FN as all labels being predicted correctly for an item.
+Accuracy is the ratio of correctly predicted observations to all observations.
+Accuracy = TP+FN/TP+FN+FP+TN
 
 The inputs to this function are:
 A list of lists or an array that contains the probability outputs (this is the typical output of `.predict` call in most machine learning libraries).
 A list of lists or an array that contains the labels for the associated results (this is typically stored in the y_test of your split).
 A threshold for the probability that is associated with a correct result.
 
-3) per_label
-
-This function provides the accuracy for both true positives and true negatives in the results at a certain threshold. For example, an algorithm that outputs five labels with outcomes of 0.55, 0.11, 0.78, 0.99, 0.02, would return a result of 80% accuracy if the threshold was set at 75% and the correct labels were True, False, True, True, False. There are five possibilities of a true positive or true negative and four were predicted correctly at the 75% threshold.
-
-The inputs to this function are:
-A list of lists or an array that contains the probability outputs (this is the typical output of `.predict` call in most machine learning libraries).
-A list of lists or an array that contains the labels for the associated results (this is typically stored in the y_test of your split).
-A threshold for the probability that is associated with a correct result.
+Return:
+A list of accuracy scores in percentages for each label in the order of the labels given.
 
 
-4) individual_label_accuracies
-
-This function provides the accuracy for each individual label (including both true positives and true negatives) across all results. For example, an algorithm that outputs five labels with outcomes of 0.55, 0.11, 0.78, 0.99, 0.02, would return a result of five accuracy results of 0%, 100%, 100%, 100%, 100% if the threshold was set at 75% and the correct labels were True, False, True, True, False.
+2) individual_label_accuracy
+This function provides the accuracy for each individual label accross all results.
+Accuracy is the ratio of correctly predicted observations to all observations.
+Accuracy = TP+FN/TP+FN+FP+TN
 
 The inputs to this function are:
 A list of lists or an array that contains the probability outputs (this is the typical output of `.predict` call in most machine learning libraries).
 A list of lists or an array that contains the labels for the associated results (this is typically stored in the y_test of your split).
 A threshold for the probability that is associated with a correct result.
 
-5) individual_label_accuracies_tp
+Return:
+A list of accuracy scores in percentages for each label in the order of the labels given.
 
-This function provides the accuracy for each individual label (ONLY true positives) across all results. For example, an algorithm that outputs five labels with outcomes of 0.55, 0.11, 0.78, 0.99, 0.02, would return a result of five accuracy results of 0%, NA, 100%, 100%, NA if the threshold was set at 75% and the correct labels were True, False, True, True, False.
+
+3) individual_label_precision
+
+This function provides the precision for each individual label (including both true positives and true negatives) across all results.
+Precision is the ratio of correctly predicted positive observations to the total predicted positive observations or the number of correct positive predictions made.
+Precision = TP/TP+FP
 
 The inputs to this function are:
 A list of lists or an array that contains the probability outputs (this is the typical output of `.predict` call in most machine learning libraries).
 A list of lists or an array that contains the labels for the associated results (this is typically stored in the y_test of your split).
 A threshold for the probability that is associated with a correct result.
 
-NOTE: In my opinion this may be the most important function for someone evaluating a multiclass-multilabel algorithm as it alerts the programmer of which labels are performing well at identifying the desired result.
+Return:
+A list of precision scores in percentages for each label in the order of the labels given.
+
+
+4) individual_label_recall
+
+This function provides the recall for each individual label (ONLY true positives) across all results.
+Recall is a metric that quantifies the number of correct positive predictions made out of all positive predictions that could have been made.
+Recall = TP/TP+FN
+
+The inputs to this function are:
+A list of arrays that contain the probability outputs (this is the typical output of `.predict` call in most machine learning libraries).
+A list of arrays that contain the labels for the associated results (this is typically stored in the y_test of your split).
+A threshold for the probability that is associated with a correct result.
+
+Return:
+A list of recall scores in percentages for each label in the order of the labels given.
+
+
+5) per_label_f1_scores (f1 scores for each label)
+This function provides the f1 score for each individual label. This is 2*((precision*recall)/(precision+recall))
+
+The inputs to this function are:
+A list of arrays that contain the probability outputs (this is the typical output of `.predict` call in most machine learning libraries).
+A list of arrays that contain the labels for the associated results (this is typically stored in the y_test of your split).
+A threshold for the probability that is associated with a correct result.
+
+Return:
+A list of f1 scores for each label in the order of the labels given.
