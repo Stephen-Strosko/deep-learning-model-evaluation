@@ -1,8 +1,9 @@
-# multiclass-multilabel-evaluation
+# Overview
 
-This repository provides a series of functions that help with a very specific objective. The functions in this repository provide various evaluation metrics for multiclass-multilabel algorithm outputs. This is an area that most machine learning library wrappers overlook. Algorithms that output a series of probabilities that are associated with multiple labels can be difficult to evaluate for accuracy, especially if the user wants to know accuracy at a specific pobability threshold. These functions solve this problem and can be easily pasted into a script, jupyter notebook, or applied within cross-fold validation.
+This repository provides a series of functions that help with a very specific objective - determining the success of deep learning algorithms that are either multiclass-multilabel or multiclass. This is an area that is overlooked by many machine learning libraries. Algorithms that output a series of probabilities that are associated with multiple labels can be difficult to evaluate for accuracy, especially if the user wants to know accuracy at a specific pobability threshold. These functions solve this problem and can be easily pasted into a script, jupyter notebook, or applied within cross-fold validation.
 
-These are the functions currently included in the repository, their inputs, their outputs, and what they accomplish:
+
+## multiclass-multilabel-evaluation
 
 1) exact_accuracy
 This function provides the accuracy of the model as a whole, treating TP and FN as all labels being predicted correctly for an item.
@@ -72,3 +73,34 @@ A threshold for the probability that is associated with a correct result.
 
 Return:
 A list of f1 scores for each label in the order of the labels given.
+
+
+## multiclass-evaluation
+
+1) multiclass_accuracy
+This function provides the accuracy of the model as a whole, treating TP and FN as all labels being predicted correctly for an item.
+Accuracy is the ratio of correctly predicted observations to all observations.
+Accuracy = TP+FN/TP+FN+FP+TN
+
+The inputs to this function are:
+A list of lists or an array that contains the probability outputs (this is the typical output of `.predict` call in most machine learning libraries).
+A list of lists or an array that contains the labels for the associated results (this is typically stored in the y_test of your split).
+A threshold for the probability that is associated with the needed confidence to signify a correct result.
+
+Return:
+Accuracy of the model and the percent of excluded results based on the threshold value.
+
+
+2) multiclass_per_label_accuracy
+This function provides the accuracy of the model at the individual label level - treating TP and FN as all labels being predicted correctly for an item.
+Accuracy is the ratio of correctly predicted observations to all observations.
+Accuracy = TP+FN/TP+FN+FP+TN
+
+The inputs to this function are:
+A list of lists or an array that contains the probability outputs (this is the typical output of `.predict` call in most machine learning libraries).
+A list of lists or an array that contains the labels for the associated results (this is typically stored in the y_test of your split).
+A threshold for the probability that is associated with the needed confidence to signify a correct result.
+
+Return:
+Accuracy of the model and the percent of excluded results based on the threshold value.
+The model also prints out the accuracy of each individual label.
